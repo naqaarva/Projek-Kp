@@ -1,0 +1,2167 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Sistem Pengaduan Masyarakat
+</title>
+
+<link
+rel="stylesheet"
+href="style.css">
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</head>
+
+<body>
+
+    <!-- ========================= -->
+<!-- LOADING -->
+<!-- ========================= -->
+
+<div id="loading">
+
+<div class="loader"></div>
+
+<h2>
+Memuat Sistem...
+</h2>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- TOAST -->
+<!-- ========================= -->
+
+<div id="toast"></div>
+
+<section
+id="loginPage"
+class="auth-container">
+
+<div class="auth-box">
+
+<h1>
+Sistem Pengaduan Masyarakat
+</h1>
+
+<p>
+Silakan login
+</p>
+
+<input
+type="text"
+id="loginUser"
+placeholder="Username">
+
+<input
+type="password"
+id="loginPass"
+placeholder="Password">
+
+<select id="role">
+
+<option value="masyarakat">
+Masyarakat
+</option>
+
+<option value="petugas">
+Petugas
+</option>
+
+</select>
+
+<button onclick="login()">
+
+Masuk
+
+</button>
+
+<p>
+
+Belum punya akun?
+
+<a href="#"
+onclick="showRegister()">
+
+Daftar
+
+</a>
+
+</p>
+
+</div>
+
+</section>
+
+<section
+id="registerPage"
+class="auth-container"
+style="display:none;">
+
+<div class="auth-box">
+
+<h1>
+Registrasi
+</h1>
+
+<input
+type="text"
+id="regNama"
+placeholder="Nama Lengkap">
+
+<input
+type="text"
+id="regUser"
+placeholder="Username">
+
+<input
+type="password"
+id="regPass"
+placeholder="Password">
+
+<input
+type="text"
+id="regWa"
+placeholder="Nomor WhatsApp">
+
+<select id="regRole">
+
+<option value="masyarakat">
+Masyarakat
+</option>
+
+<option value="petugas">
+Petugas
+</option>
+
+</select>
+
+<button onclick="registerUser()">
+
+Daftar
+
+</button>
+
+<p>
+
+Sudah punya akun?
+
+<a href="#"
+onclick="showLogin()">
+
+Login
+
+</a>
+
+</p>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- DASHBOARD -->
+<!-- ============================================== -->
+
+<div
+id="dashboard"
+style="display:none;">
+
+<!-- ============================================== -->
+<!-- SIDEBAR MASYARAKAT -->
+<!-- ============================================== -->
+
+<div
+class="sidebar"
+id="sidebarMasyarakat"
+style="display:none;">
+
+<div class="logo-sidebar">
+
+<h2>
+🏛️
+</h2>
+
+<h3>
+E-Pengaduan
+</h3>
+
+<p>
+Portal Pengaduan Masyarakat
+</p>
+
+</div>
+
+<ul>
+
+<li onclick="showMenu('home')">
+
+🏠 Dashboard
+
+</li>
+
+<li onclick="showMenu('buatKeluhan')">
+
+📝 Buat Keluhan
+
+</li>
+
+<li onclick="showMenu('keluhanSaya')">
+
+📋 Keluhan Saya
+
+<span
+class="menu-badge"
+id="badgeKeluhanSaya">
+
+0
+
+</span>
+
+</li>
+
+<li onclick="showMenu('trackingKeluhan')">
+
+📍 Tracking
+
+</li>
+
+<li onclick="showMenu('kritikSaran')">
+
+💡 Kritik & Saran
+
+</li>
+
+<li onclick="showMenu('knowledgeBase')">
+
+📚 Knowledge Base
+
+</li>
+
+<li onclick="showMenu('notificationCenter')">
+
+🔔 Notifikasi
+
+<span
+class="menu-badge"
+id="badgeNotifikasi">
+
+0
+
+</span>
+
+</li>
+
+<li onclick="openProfileModal()">
+
+👤 Profil
+
+</li>
+
+<li onclick="logout()">
+
+🚪 Logout
+
+</li>
+
+</ul>
+
+</div>
+
+<!-- ============================================== -->
+<!-- SIDEBAR PETUGAS -->
+<!-- ============================================== -->
+
+<section
+id="kelolaKeluhan"
+class="menu"
+style="display:none;">
+
+<h1>Kelola Keluhan</h1>
+
+<div class="menu-box">
+
+<table>
+
+<thead>
+<tr>
+<th>No</th>
+<th>ID</th>
+<th>Pelapor</th>
+<th>Judul</th>
+<th>Deskripsi</th>
+<th>Kategori</th>
+<th>Prioritas</th>
+<th>Status</th>
+<th>Aksi</th>
+</tr>
+</thead>
+
+<tbody id="kelolaKeluhanTableBody">
+
+<tr>
+<td colspan="9">
+Belum ada keluhan
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+<div
+class="sidebar"
+id="sidebarPetugas"
+style="display:none;">
+
+<div class="logo-sidebar">
+
+<h2>
+🛡️
+</h2>
+
+<h3>
+Panel Petugas
+</h3>
+
+<p>
+Pengelolaan Keluhan
+</p>
+
+</div>
+
+<ul>
+
+<li onclick="showMenu('petugasDashboard')">
+
+📊 Dashboard
+
+</li>
+
+<li onclick="showMenu('kelolaKeluhan')">
+
+📋 Kelola Keluhan
+
+<span
+class="menu-badge"
+id="badgeKeluhanMasuk">
+
+0
+
+</span>
+
+</li>
+
+<li onclick="showMenu('dataMasyarakat')">
+
+👥 Data Masyarakat
+
+</li>
+
+<li onclick="showMenu('dataPetugas')">
+
+👨‍💼 Data Petugas
+
+</li>
+
+<li onclick="showMenu('kelolaKritikSaran')">
+
+💡 Kelola Kritik
+
+</li>
+
+<li onclick="showMenu('notificationCenter')">
+
+🔔 Notifikasi
+
+</li>
+
+<li onclick="showMenu('laporan')">
+
+📄 Laporan
+
+</li>
+
+<li onclick="showMenu('pengaturan')">
+
+⚙️ Pengaturan
+
+</li>
+
+<li onclick="logout()">
+
+🚪 Logout
+
+</li>
+
+</ul>
+
+</div>
+
+<!-- ============================================== -->
+<!-- CONTENT -->
+<!-- ============================================== -->
+
+<div class="content">
+
+<!-- ============================================== -->
+<!-- TOPBAR -->
+<!-- ============================================== -->
+
+<div class="info-panel">
+
+<div>
+
+<h3 id="welcomeText">
+
+Selamat Datang
+
+</h3>
+
+<span id="tanggalHariIni">
+
+Tanggal
+
+</span>
+
+</div>
+
+<div>
+
+<h3 id="jamRealtime">
+
+00:00:00
+
+</h3>
+
+</div>
+
+</div>
+
+<!-- ============================================== -->
+<!-- DASHBOARD MASYARAKAT -->
+<!-- ============================================== -->
+
+<section
+id="home"
+class="menu">
+
+<h1>
+Dashboard Masyarakat
+</h1>
+
+<p class="subtitle">
+
+Selamat datang di Sistem Pengaduan Masyarakat.
+
+</p>
+
+<div class="cards">
+
+<div class="card">
+
+<div class="card-icon">
+
+📋
+
+</div>
+
+<h3>
+
+Total Keluhan
+
+</h3>
+
+<h2 id="totalKeluhan">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<div class="card-icon">
+
+⏳
+
+</div>
+
+<h3>
+
+Menunggu
+
+</h3>
+
+<h2 id="totalMenunggu">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<div class="card-icon">
+
+⚙️
+
+</div>
+
+<h3>
+
+Diproses
+
+</h3>
+
+<h2 id="totalDiproses">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<div class="card-icon">
+
+✅
+
+</div>
+
+<h3>
+
+Selesai
+
+</h3>
+
+<h2 id="totalSelesai">
+
+0
+
+</h2>
+
+</div>
+
+</div>
+
+<!-- ============================================== -->
+<!-- PROGRESS -->
+<!-- ============================================== -->
+
+<div class="menu-box">
+
+<h3>
+
+Progress Penyelesaian Keluhan
+
+</h3>
+
+<div class="progress-bar">
+
+<div
+id="progressKeluhan"
+class="progress">
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ============================================== -->
+<!-- RINGKASAN -->
+<!-- ============================================== -->
+
+<div class="dashboard-grid">
+
+<div class="summary">
+
+<h3>
+
+Ringkasan Sistem
+
+</h3>
+
+<p>
+
+Sistem pengaduan masyarakat berbasis digital
+untuk mempercepat pelayanan publik.
+
+</p>
+
+</div>
+
+<div class="summary">
+
+<h3>
+
+Notifikasi Terbaru
+
+</h3>
+
+<div
+id="notifikasiMasyarakat">
+
+<div class="notification-item">
+
+<h4>
+
+Selamat Datang
+
+</h4>
+
+<p>
+
+Terima kasih telah menggunakan sistem.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- DASHBOARD PETUGAS -->
+<!-- ============================================== -->
+
+<section
+id="petugasDashboard"
+class="menu"
+style="display:none;">
+
+<h1>
+Dashboard Petugas
+</h1>
+
+<p class="subtitle">
+
+Monitoring dan Pengelolaan Keluhan
+
+</p>
+
+<!-- ============================================== -->
+<!-- CARD STATISTIK -->
+<!-- ============================================== -->
+
+<div class="cards">
+
+<div class="card">
+
+<div class="card-icon">
+
+📋
+
+</div>
+
+<h3>
+
+Total Keluhan
+
+</h3>
+
+<h2 id="petugasTotal">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<div class="card-icon">
+
+⏳
+
+</div>
+
+<h3>
+
+Menunggu
+
+</h3>
+
+<h2 id="petugasMenunggu">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<div class="card-icon">
+
+⚙️
+
+</div>
+
+<h3>
+
+Diproses
+
+</h3>
+
+<h2 id="petugasDiproses">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<div class="card-icon">
+
+✅
+
+</div>
+
+<h3>
+
+Selesai
+
+</h3>
+
+<h2 id="petugasSelesai">
+
+0
+
+</h2>
+
+</div>
+
+</div>
+
+<!-- ============================================== -->
+<!-- GRAFIK -->
+<!-- ============================================== -->
+
+<div class="dashboard-grid">
+
+<div class="chart-box">
+
+<h3>
+
+Grafik Status Keluhan
+
+</h3>
+
+<canvas
+id="chartKeluhanCanvas">
+
+</canvas>
+
+</div>
+
+<div class="chart-box">
+
+<h3>
+
+Grafik Kategori Keluhan
+
+</h3>
+
+<canvas
+id="chartKategoriCanvas">
+
+</canvas>
+
+</div>
+
+</div>
+
+<!-- ============================================== -->
+<!-- AKTIVITAS TERBARU -->
+<!-- ============================================== -->
+
+<div class="menu-box">
+
+<h3>
+
+Aktivitas Terbaru
+
+</h3>
+
+<div
+id="aktivitasPetugas">
+
+<div class="notification-item">
+
+<h4>
+
+Belum ada aktivitas
+
+</h4>
+
+<p>
+
+Aktivitas petugas akan muncul di sini
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ============================================== -->
+<!-- KELUHAN PRIORITAS -->
+<!-- ============================================== -->
+
+<div class="menu-box">
+
+<h3>
+
+Keluhan Prioritas Tinggi
+
+</h3>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>Pelapor</th>
+
+<th>Judul</th>
+
+<th>Prioritas</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody
+id="prioritasTableBody">
+
+<tr>
+
+<td colspan="5">
+
+Belum ada data
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- DATA MASYARAKAT -->
+<!-- ============================================== -->
+
+<section
+id="dataMasyarakat"
+class="menu"
+style="display:none;">
+
+<h1>
+Data Masyarakat
+</h1>
+
+<div class="menu-box">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>No</th>
+
+<th>Nama</th>
+
+<th>Username</th>
+
+<th>No WA</th>
+
+</tr>
+
+</thead>
+
+<tbody
+id="tabelMasyarakat">
+
+<tr>
+
+<td colspan="4">
+
+Belum ada data
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- DATA PETUGAS -->
+<!-- ============================================== -->
+
+<section
+id="dataPetugas"
+class="menu"
+style="display:none;">
+
+<h1>
+Data Petugas
+</h1>
+
+<div class="menu-box">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>No</th>
+
+<th>Nama</th>
+
+<th>Username</th>
+
+<th>No WA</th>
+
+</tr>
+
+</thead>
+
+<tbody
+id="tabelPetugas">
+
+<tr>
+
+<td colspan="4">
+
+Belum ada data
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- KELOLA KRITIK SARAN PETUGAS -->
+<!-- ============================================== -->
+
+<section
+id="kelolaKritikSaran"
+class="menu"
+style="display:none;">
+
+<h1>
+Kelola Kritik & Saran
+</h1>
+
+<div class="search-box">
+
+<input
+type="text"
+id="searchKritik"
+placeholder="Cari kritik atau nama..."
+onkeyup="cariKritikSaran()">
+
+</div>
+
+<div class="menu-box">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>No</th>
+<th>Nama</th>
+<th>Kritik</th>
+<th>Saran</th>
+<th>Tanggal</th>
+<th>Status</th>
+<th>Aksi</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tabelKelolaKritik">
+
+<tr>
+
+<td colspan="7">
+
+Belum ada masukan
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- KELOLA KRITIK SARAN PETUGAS -->
+<!-- ============================================== -->
+
+<section
+id="kelolaKritikSaran"
+class="menu"
+style="display:none;">
+
+<h1>
+Kelola Kritik & Saran
+</h1>
+
+<div class="search-box">
+
+<input
+type="text"
+id="searchKritik"
+placeholder="Cari kritik..."
+onkeyup="cariKritikSaran()">
+
+</div>
+
+<div class="menu-box">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>No</th>
+<th>Nama</th>
+<th>Kritik</th>
+<th>Saran</th>
+<th>Tanggal</th>
+<th>Status</th>
+<th>Aksi</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tabelKelolaKritik">
+
+<tr>
+
+<td colspan="7">
+
+Belum ada data
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- NOTIFICATION CENTER -->
+<!-- ============================================== -->
+
+<section
+id="notificationCenter"
+class="menu"
+style="display:none;">
+
+<h1>
+Notifikasi Sistem
+</h1>
+
+<div
+id="notificationList">
+
+<div class="notification-item">
+
+<h4>
+
+Belum ada notifikasi
+
+</h4>
+
+<p>
+
+Notifikasi akan muncul di sini
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- BUAT KELUHAN -->
+<!-- ============================================== -->
+
+<section
+id="buatKeluhan"
+class="menu"
+style="display:none;">
+
+<h1>
+Buat Keluhan Baru
+</h1>
+
+<div class="form-container">
+
+<div class="form-group">
+
+<label>
+Judul Keluhan
+</label>
+
+<input
+type="text"
+id="judulKeluhan"
+placeholder="Masukkan judul keluhan">
+
+</div>
+
+<div class="form-group">
+
+<label>
+Kategori Keluhan
+</label>
+
+<select
+id="kategoriKeluhan">
+
+<option value="">
+
+Pilih Kategori
+
+</option>
+
+<option value="Jalan Rusak">
+
+Jalan Rusak
+
+</option>
+
+<option value="Lampu Jalan">
+
+Lampu Jalan
+
+</option>
+
+<option value="Sampah">
+
+Sampah
+
+</option>
+
+<option value="Drainase">
+
+Drainase
+
+</option>
+
+<option value="Fasilitas Umum">
+
+Fasilitas Umum
+
+</option>
+
+<option value="Lainnya">
+
+Lainnya
+
+</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>
+Prioritas
+</label>
+
+<select
+id="prioritasKeluhan">
+
+<option value="Rendah">
+
+Rendah
+
+</option>
+
+<option value="Sedang">
+
+Sedang
+
+</option>
+
+<option value="Tinggi">
+
+Tinggi
+
+</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>
+Tanggal Kejadian
+</label>
+
+<input
+type="date"
+id="tanggalKeluhan">
+
+</div>
+
+<div class="form-group">
+
+<label>
+Lokasi
+</label>
+
+<div class="location-box">
+
+<input
+type="text"
+id="lokasiKeluhan"
+placeholder="Lokasi kejadian">
+
+<button
+type="button"
+onclick="ambilLokasi()">
+
+📍 Ambil Lokasi
+
+</button>
+
+</div>
+
+</div>
+
+<div class="form-group">
+
+<label>
+Foto Keluhan
+</label>
+
+<input
+type="file"
+id="fotoKeluhan"
+accept="image/*"
+onchange="previewFotoKeluhan()">
+
+</div>
+
+<div class="preview-container">
+
+<img
+id="previewFoto"
+style="display:none;max-width:300px;">
+
+</div>
+
+<div class="form-group">
+
+<label>
+Deskripsi Keluhan
+</label>
+
+<textarea
+id="deskripsiKeluhan"
+rows="6"
+placeholder="Jelaskan keluhan secara rinci">
+
+</textarea>
+
+</div>
+
+<button
+class="btn-primary"
+onclick="kirimKeluhan()">
+
+Kirim Keluhan
+
+</button>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- KELUHAN SAYA -->
+<!-- ============================================== -->
+
+<section
+id="keluhanSaya"
+class="menu"
+style="display:none;">
+
+<h1>
+Keluhan Saya
+</h1>
+
+<div class="search-box">
+
+<input
+type="text"
+id="searchKeluhan"
+placeholder="Cari keluhan..."
+onkeyup="cariKeluhanSaya()">
+
+</div>
+
+<div class="menu-box">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>No</th>
+
+<th>Tanggal</th>
+
+<th>Judul</th>
+
+<th>Kategori</th>
+
+<th>Prioritas</th>
+
+<th>Status</th>
+
+<th>Aksi</th>
+
+</tr>
+
+</thead>
+
+<tbody
+id="tabelKeluhanSaya">
+
+<tr>
+
+<td colspan="7">
+
+Belum ada keluhan
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- TRACKING KELUHAN -->
+<!-- ============================================== -->
+
+<section
+id="trackingKeluhan"
+class="menu"
+style="display:none;">
+
+<h1>
+Tracking Keluhan
+</h1>
+
+<div class="menu-box">
+
+<div
+id="trackingContainer">
+
+<div class="tracking-item">
+
+<div class="tracking-icon">
+
+📝
+
+</div>
+
+<div>
+
+<h4>
+
+Keluhan Dikirim
+
+</h4>
+
+<p>
+
+Menunggu data
+
+</p>
+
+</div>
+
+</div>
+
+<div class="tracking-item">
+
+<div class="tracking-icon">
+
+⚙️
+
+</div>
+
+<div>
+
+<h4>
+
+Sedang Diproses
+
+</h4>
+
+<p>
+
+Menunggu data
+
+</p>
+
+</div>
+
+</div>
+
+<div class="tracking-item">
+
+<div class="tracking-icon">
+
+✅
+
+</div>
+
+<div>
+
+<h4>
+
+Selesai
+
+</h4>
+
+<p>
+
+Menunggu data
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- MODAL DETAIL KELUHAN -->
+<!-- ============================================== -->
+
+<div
+id="modalKeluhan"
+class="modal">
+
+<div class="modal-content">
+
+<span
+class="close"
+onclick="tutupModalKeluhan()">
+
+&times;
+
+</span>
+
+<h2>
+Detail Keluhan
+</h2>
+
+<div class="detail-grid">
+
+<p>
+
+<strong>ID:</strong>
+
+<span id="modalId"></span>
+
+</p>
+
+<p>
+
+<strong>Nama:</strong>
+
+<span id="modalNama"></span>
+
+</p>
+
+<p>
+
+<strong>No WA:</strong>
+
+<span id="modalWa"></span>
+
+</p>
+
+<p>
+
+<strong>Judul:</strong>
+
+<span id="modalJudul"></span>
+
+</p>
+
+<p>
+
+<strong>Kategori:</strong>
+
+<span id="modalKategori"></span>
+
+</p>
+
+<p>
+
+<strong>Prioritas:</strong>
+
+<span id="modalPrioritas"></span>
+
+</p>
+
+<p>
+
+<strong>Status:</strong>
+
+<span id="modalStatus"></span>
+
+</p>
+
+<p>
+
+<strong>Lokasi:</strong>
+
+<span id="modalLokasi"></span>
+
+</p>
+
+</div>
+
+<hr>
+
+<h4>
+Deskripsi
+</h4>
+
+<p id="modalDeskripsi">
+
+-
+
+</p>
+
+<hr>
+
+<h4>
+Penanganan Petugas
+</h4>
+
+<input
+type="text"
+id="namaPetugas"
+placeholder="Nama Petugas">
+
+<select
+id="updateStatus">
+
+<option value="Menunggu">
+
+Menunggu
+
+</option>
+
+<option value="Diproses">
+
+Diproses
+
+</option>
+
+<option value="Selesai">
+
+Selesai
+
+</option>
+
+</select>
+
+<input
+type="date"
+id="estimasiSelesai">
+
+<button
+onclick="simpanStatusKeluhan()">
+
+Simpan Perubahan
+
+</button>
+
+</div>
+
+</div>
+
+<!-- ============================================== -->
+<!-- KRITIK DAN SARAN -->
+<!-- ============================================== -->
+
+<section
+id="kritikSaran"
+class="menu"
+style="display:none;">
+
+<h1>
+Kritik dan Saran
+</h1>
+
+<div class="form-container">
+
+<div class="form-group">
+
+<label>
+Nama
+</label>
+
+<input
+type="text"
+id="kritikNama"
+placeholder="Nama Anda">
+
+</div>
+
+<div class="form-group">
+
+<label>
+Kritik
+</label>
+
+<textarea
+id="kritikText"
+rows="5">
+
+</textarea>
+
+</div>
+
+<div class="form-group">
+
+<label>
+Saran
+</label>
+
+<textarea
+id="saranText"
+rows="5">
+
+</textarea>
+
+</div>
+
+<button
+onclick="kirimKritikSaran()">
+
+Kirim Masukan
+
+</button>
+
+</div>
+
+<div class="menu-box">
+
+<h3>
+Riwayat Masukan
+</h3>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>No</th>
+
+<th>Nama</th>
+
+<th>Kritik</th>
+
+<th>Saran</th>
+
+<th>Tanggal</th>
+
+</tr>
+
+</thead>
+
+<tbody
+id="tabelKritik">
+
+<tr>
+
+<td colspan="5">
+
+Belum ada data
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- KNOWLEDGE BASE -->
+<!-- ============================================== -->
+
+<section
+id="knowledgeBase"
+class="menu"
+style="display:none;">
+
+<h1>
+Knowledge Base
+</h1>
+
+<div class="form-group">
+
+<input
+type="text"
+id="kbSearch"
+placeholder="Cari informasi...">
+
+<button
+onclick="cariKnowledge()">
+
+Cari
+
+</button>
+
+</div>
+
+<div id="kbResult">
+
+</div>
+
+<div class="faq-box">
+
+<h3>
+Bagaimana cara membuat keluhan?
+</h3>
+
+<p>
+Masuk ke menu Buat Keluhan,
+lengkapi formulir lalu klik
+Kirim Keluhan.
+</p>
+
+</div>
+
+<div class="faq-box">
+
+<h3>
+Bagaimana cara melihat status?
+</h3>
+
+<p>
+Buka menu Keluhan Saya
+atau Tracking Keluhan.
+</p>
+
+</div>
+
+<div class="faq-box">
+
+<h3>
+Bagaimana cara menghubungi petugas?
+</h3>
+
+<p>
+Nomor WhatsApp petugas
+akan tersedia pada proses
+penanganan keluhan.
+</p>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- LAPORAN -->
+<!-- ============================================== -->
+
+<section
+id="laporan"
+class="menu"
+style="display:none;">
+
+<h1>
+Laporan Keluhan
+</h1>
+
+<div class="cards">
+
+<div class="card">
+
+<h3>Total</h3>
+
+<h2 id="laporanTotal">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<h3>Menunggu</h3>
+
+<h2 id="laporanMenunggu">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<h3>Diproses</h3>
+
+<h2 id="laporanDiproses">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<h3>Selesai</h3>
+
+<h2 id="laporanSelesai">
+
+0
+
+</h2>
+
+</div>
+
+</div>
+
+<div class="menu-box">
+
+<button
+onclick="exportCSV()">
+
+Export Excel
+
+</button>
+
+<button
+onclick="exportPDF()">
+
+Export PDF
+
+</button>
+
+<button
+onclick="window.print()">
+
+Print
+
+</button>
+
+</div>
+
+<div class="menu-box">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>Pelapor</th>
+
+<th>No WA</th>
+
+<th>Judul</th>
+
+<th>Kategori</th>
+
+<th>Status</th>
+
+<th>Petugas</th>
+
+</tr>
+
+</thead>
+
+<tbody
+id="laporanTableBody">
+
+<tr>
+
+<td colspan="7">
+
+Belum ada data
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- PENGATURAN -->
+<!-- ============================================== -->
+
+<section
+id="pengaturan"
+class="menu"
+style="display:none;">
+
+<h1>
+Pengaturan Sistem
+</h1>
+
+<div class="form-container">
+
+<div class="form-group">
+
+<label>
+Nama Instansi
+</label>
+
+<input
+type="text"
+id="namaInstansi">
+
+</div>
+
+<div class="form-group">
+
+<label>
+Alamat Instansi
+</label>
+
+<input
+type="text"
+id="alamatInstansi">
+
+</div>
+
+<div class="form-group">
+
+<label>
+Email Instansi
+</label>
+
+<input
+type="email"
+id="emailInstansi">
+
+</div>
+
+<div class="form-group">
+
+<label>
+WhatsApp Admin
+</label>
+
+<input
+type="text"
+id="waAdmin">
+
+</div>
+
+<button
+onclick="simpanPengaturan()">
+
+Simpan Pengaturan
+
+</button>
+
+</div>
+
+</section>
+
+<!-- ============================================== -->
+<!-- PROFILE MODAL -->
+<!-- ============================================== -->
+
+<div
+id="profileModal"
+class="modal">
+
+<div class="modal-content">
+
+<span
+class="close"
+onclick="closeProfileModal()">
+
+&times;
+
+</span>
+
+<h2>
+Profil Pengguna
+</h2>
+
+<p>
+
+<strong>Nama:</strong>
+
+<span id="modalProfileNama">
+
+-
+
+</span>
+
+</p>
+
+<p>
+
+<strong>Username:</strong>
+
+<span id="modalProfileUsername">
+
+-
+
+</span>
+
+</p>
+
+<p>
+
+<strong>No WA:</strong>
+
+<span id="modalProfileWA">
+
+-
+
+</span>
+
+</p>
+
+</div>
+
+</div>
+
+<!-- ============================================== -->
+<!-- FOOTER -->
+<!-- ============================================== -->
+
+<footer>
+
+<p>
+
+© 2026 Sistem Pengaduan Masyarakat
+
+</p>
+
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
